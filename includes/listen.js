@@ -266,13 +266,17 @@ module.exports = function ({ api, models }) {
     //========= Send event to handle need =========//
     /////////////////////////////////////////////////
 
-    return (event) => {
+    return async (event) => {
         switch (event.type) {
           case "message":
           case "message_reply":
           case "message_unsend":
             handleCreateDatabase({ event });
-            handleCommand({ event });
+            try {
+                await handleCommand({ event });
+            } catch (error) {
+                console.error('[COMMAND HANDLER ERROR]', error);
+            }
             handleReply({ event });
             handleCommandEvent({ event });
     
