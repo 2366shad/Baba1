@@ -29,7 +29,8 @@ module.exports = function ({ api, models, Users, Threads, Currencies }) {
     }
     const dataAdbox = require('../../Priyansh/commands/cache/data.json');
     var threadInf = (threadInfo.get(threadID) || await Threads.getInfo(threadID));
-    const findd = threadInf.adminIDs.find(el => el.id == senderID);
+    const threadAdmins = Array.isArray(threadInf && threadInf.adminIDs) ? threadInf.adminIDs : [];
+    const findd = threadAdmins.find(el => String(el.id) == String(senderID));
     if (dataAdbox.adminbox.hasOwnProperty(threadID) && dataAdbox.adminbox[threadID] == true && !ADMINBOT.includes(senderID) && !findd && event.isGroup == true) return api.sendMessage('MODE » Only admins can use bots', event.threadID, event.messageID)
     if (userBanned.has(senderID) || threadBanned.has(threadID) || allowInbox == ![] && senderID == threadID) {
       if (!ADMINBOT.includes(senderID.toString())) {
@@ -94,7 +95,8 @@ module.exports = function ({ api, models, Users, Threads, Currencies }) {
       }
     var permssion = 0;
     var threadInfoo = (threadInfo.get(threadID) || await Threads.getInfo(threadID));
-    const find = threadInfoo.adminIDs.find(el => el.id == senderID);
+    const threadAdminsForPermission = Array.isArray(threadInfoo && threadInfoo.adminIDs) ? threadInfoo.adminIDs : [];
+    const find = threadAdminsForPermission.find(el => String(el.id) == String(senderID));
     if (NDH.includes(senderID.toString())) permssion = 2;
     if (ADMINBOT.includes(senderID.toString())) permssion = 3;
     else if (!ADMINBOT.includes(senderID) && !NDH.includes(senderID) && find) permssion = 1;
@@ -128,7 +130,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies }) {
       Obj.Currencies = Currencies
       Obj.permssion = permssion
       Obj.getText = getText2
-      command.run(Obj);
+      await command.run(Obj);
       timestamps.set(senderID, dateNow);
       if (DeveloperMode == !![])
         logger(global.getText("handleCommand", "executeCommand", time, commandName, senderID, threadID, args.join(" "), (Date.now()) - dateNow), "[ DEV MODE ]");
